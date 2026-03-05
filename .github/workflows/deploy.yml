@@ -33,10 +33,12 @@ jobs:
 
       # 4. Terraform Init
       - name: Terraform Init
+        working-directory: terraform
         run: terraform init
 
       # 5. Terraform Apply (using GitHub Secrets instead of .tfvars)
       - name: Terraform Apply
+        working-directory: terraform
         run: |
           terraform apply -auto-approve \
             -var "mongodb_url=${{ secrets.MONGODB_URL }}" \
