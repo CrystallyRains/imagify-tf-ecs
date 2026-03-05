@@ -86,3 +86,22 @@ jobs:
             --cluster ${{ env.ECS_CLUSTER }} \
             --services ${{ env.ECS_SERVICE }}
           echo "Deployment complete!"
+
+      # Get ALB DNS name so you know where to access the app
+      - name: Get ALB endpoint
+        run: |
+          ALB_DNS=$(aws elbv2 describe-load-balancers \
+            --names imagify-alb \
+            --region us-east-1 \
+            --query 'LoadBalancers[0].DNSName' \
+            --output text)
+          echo "✅ App is accessible at: http://$ALB_DNS"
+          echo "ALB_DNS=$ALB_DNS" >> $GITHUB_ENV
+
+      - name: Deployment summary
+        run: |
+          echo "================================================"
+          echo "🚀 Deployment complete!"
+          echo "📦 Image: ${{ env.ECR_URI }}:${{ env.IMAGE_TAG }}"
+          echo "🌐 URL: http://${{ env.ALB_DNS }}"
+          echo "================================================"
