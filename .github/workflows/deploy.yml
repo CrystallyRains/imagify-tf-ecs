@@ -50,37 +50,27 @@ jobs:
             -var "stripe_publishable_key=${{ secrets.STRIPE_PUBLISHABLE_KEY }}"
 
       # 6. Get ECR repo URI from Terraform output
-      - name: Get ECR repository URI
-        id: ecr
+      - name: Get ECR repo URI
+        working-directory: terraform   # <-- ensures terraform runs in correct folder
         run: |
           ECR_URI=$(terraform output -raw ecr_repository_url)
-          echo "ECR_URI=$ECR_URI" >> $GITHUB_ENV
-
+          echo "ECR_URI=${ECR_URI}" >> $GITHUB_ENV
+      
       # 7. Login to ECR
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
-
+      
       # 8. Build Docker image
       - name: Build Docker image
         run: |
           docker build -t imagify:${{ env.IMAGE_TAG }} .
-
+      
       # 9. Tag Docker image with ECR URI
       - name: Tag Docker image
         run: |
-          docker tag imagify:${{ env.IMAGE_TAG }} $ECR_URI:${{ env.IMAGE_TAG }}
-
+          docker tag imagify:${{ env.IMAGE_TAG }} ${{ env.ECR_URI }}:${{ env.IMAGE_TAG }}
+      
       # 10. Push Docker image to ECR
-      - name: Push Docker image to ECR
+      - name: Push Docker image
         run: |
-          docker push $ECR_URI:${{ env.IMAGE_TAG }}
-
-      # 11. Update ECS service to deploy new image
-      - name: Update ECS Service
-        run: |
-          ECS_CLUSTER=$(terraform output -raw aws_ecs_cluster)
-          ECS_SERVICE=$(terraform output -raw aws_ecs_service)
-          aws ecs update-service \
-            --cluster $ECS_CLUSTER \
-            --service $ECS_SERVICE \
-            --force-new-deployment
+          docker push ${{ env.ECR_URI }}:${{ env.IMAGE_TAG }}
