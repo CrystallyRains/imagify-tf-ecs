@@ -3,7 +3,7 @@ module "ecr" {
 
   repository_name = "imagify-repo"
 
-  repository_read_write_access_arns = aws_iam_role.ecs_execution_role.arn
+  repository_read_write_access_arns = [aws_iam_role.ecs_execution_role.arn]
   repository_lifecycle_policy = jsonencode({
     rules = [
       {
