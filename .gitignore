@@ -42,3 +42,5 @@ terraform/terraform.tfvars
 *.tfstate
 *.tfstate.backup
 .terraform/
+
+infra-bootstrap/*.tfstate
