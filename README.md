@@ -58,15 +58,7 @@ Responsibilities:
 - Apply infrastructure
 - Store critical infrastructure outputs in **SSM Parameter Store**
 
-Values stored in SSM:
-
-
-/imagify/dev/ecr_repository_url
-/imagify/dev/ecs_cluster
-/imagify/dev/ecs_service
-
-
-This allows later workflows to **retrieve infrastructure values dynamically without re-running Terraform**.
+Values are stored in SSM. This allows later workflows to **retrieve infrastructure values dynamically without re-running Terraform**.
 
 ---
 
@@ -98,9 +90,7 @@ This workflow is **manual only** and requires typing `"destroy"` as confirmation
 Steps:
 
 1. Empty ECR repository images
-2. Empty Terraform state bucket
-3. Run `terraform destroy`
-4. Remove infrastructure parameters from SSM
+2. Run `terraform destroy`
 
 This ensures **clean infrastructure teardown without orphaned resources**.
 
@@ -112,7 +102,7 @@ Application secrets are **never stored in the repository**.
 
 Instead:
 
-1. Secrets are stored in **GitHub Actions Secrets**
+1. Secrets are stored in **GitHub Secrets**
 2. These secrets are passed to Terraform during `terraform apply`
 3. Terraform writes required values to **AWS Systems Manager Parameter Store**
 
@@ -144,62 +134,3 @@ Benefits:
 This reduced the image size by **~10x compared to a naive Docker build**.
 
 ---
-
-# Deployment Flow
-
-
-Developer pushes code to GitHub
-│
-▼
-GitHub Actions (infra.yml)
-Provision AWS infrastructure via Terraform
-│
-▼
-Infrastructure outputs saved to SSM
-│
-▼
-GitHub Actions (deploy.yml)
-Build Docker image
-Push to Amazon ECR
-Update ECS Service
-│
-▼
-ECS pulls new image
-Rolling deployment
-│
-▼
-Application available via ALB
-
-
----
-
-# Repository Structure
-
-
-imagify-tf-ecs
-│
-├── terraform/ # Infrastructure as Code
-│
-├── .github/workflows
-│ ├── infra.yml # Terraform provisioning
-│ ├── deploy.yml # Build and deploy app
-│ └── destroy.yml # Destroy infrastructure
-│
-├── Dockerfile # Multi-stage Docker build
-│
-└── application code
-
-
----
-
-# What This Project Demonstrates
-
-This project showcases real-world **Cloud Engineer / DevOps practices**:
-
-- Infrastructure as Code using Terraform
-- CI/CD pipelines using GitHub Actions
-- Containerization with Docker
-- AWS container orchestration using ECS
-- Secure secret management
-- Automated infrastructure lifecycle
-- Production-style deployment architecture
