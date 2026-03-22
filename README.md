@@ -20,10 +20,9 @@ The deployment uses the following AWS services:
 - IAM Roles & Policies - permissions for ECS and CI/CD
 - S3 - Terraform remote backend for state management
 - AWS Systems Manager Parameter Store (SSM) - stores infrastructure outputs for CI/CD
-- GitHub Actions![arcd (1)](https://github.com/user-attachments/assets/7a46ec51-4061-499c-8ffa-3267e656ee63)
+- GitHub Actions
 
-
-
+![arcd](https://github.com/user-attachments/assets/f23e7eaf-b5d8-4a53-a0d3-9e975fd1f49a)
 
 ---
 
